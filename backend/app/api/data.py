@@ -4,6 +4,7 @@
 from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.data import DetectionData, OriginalRecord, DataTrace
@@ -20,6 +21,34 @@ from app.models.user import User
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+class DilutionCalcRequest(BaseModel):
+    original_concentration: float
+    target_concentration: float
+
+
+class DilutionCalcResponse(BaseModel):
+    original_concentration: float
+    target_concentration: float
+    dilution_factor: float
+
+
+@router.post("/dilution-calc/", response_model=DilutionCalcResponse)
+def calc_dilution_factor(
+    req: DilutionCalcRequest,
+    current_user: User = Depends(get_current_active_user)
+):
+    if req.original_concentration <= 0 or req.target_concentration <= 0:
+        raise HTTPException(status_code=400, detail="原始浓度和目标浓度必须大于零")
+    if req.target_concentration >= req.original_concentration:
+        raise HTTPException(status_code=400, detail="目标浓度必须小于原始浓度")
+    factor = round(req.original_concentration / req.target_concentration, 2)
+    return DilutionCalcResponse(
+        original_concentration=req.original_concentration,
+        target_concentration=req.target_concentration,
+        dilution_factor=factor
+    )
 
 
 def generate_record_no(db: Session) -> str:

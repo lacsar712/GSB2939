@@ -116,6 +116,12 @@ const routes = [
             name: 'DataTrace',
             component: () => import('@/views/data/Trace.vue'),
             meta: { title: '数据溯源', icon: 'Share' }
+          },
+          {
+            path: 'dilution-calc',
+            name: 'DilutionCalc',
+            component: () => import('@/views/data/DilutionCalc.vue'),
+            meta: { title: '稀释倍数计算', icon: 'Cpu' }
           }
         ]
       },
