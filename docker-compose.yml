@@ -1,0 +1,63 @@
+services:
+  # MySQL 数据库
+  db:
+    image: mysql:8.0
+    container_name: lims_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: lims
+      MYSQL_USER: lims
+      MYSQL_PASSWORD: lims123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - lims_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI 后端
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lims_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://lims:lims123@db:3306/lims
+      - SECRET_KEY=lims_secret_key_2024_very_secure
+      - CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - lims_network
+
+  # Vue3 前端
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lims_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - lims_network
+
+volumes:
+  mysql_data:
+
+networks:
+  lims_network:
+    driver: bridge
