@@ -4,6 +4,7 @@
 from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.data import DetectionData, OriginalRecord, DataTrace
@@ -20,6 +21,44 @@ from app.models.user import User
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+# ==================== 溶液稀释倍数计算 ====================
+
+class DilutionRequest(BaseModel):
+    """稀释倍数计算请求"""
+    original_concentration: float = Field(..., description="原始浓度")
+    target_concentration: float = Field(..., description="目标浓度")
+
+
+class DilutionResponse(BaseModel):
+    """稀释倍数计算响应"""
+    original_concentration: float
+    target_concentration: float
+    dilution_factor: float
+
+
+@router.post("/dilution/calculate", response_model=DilutionResponse)
+def calculate_dilution(
+    payload: DilutionRequest,
+    current_user: User = Depends(get_current_active_user)
+):
+    """计算溶液稀释倍数：稀释倍数 = 原始浓度 / 目标浓度，保留两位小数"""
+    if payload.original_concentration <= 0 or payload.target_concentration <= 0:
+        raise HTTPException(status_code=400, detail="原始浓度和目标浓度必须均大于零")
+
+    if payload.target_concentration >= payload.original_concentration:
+        raise HTTPException(status_code=400, detail="目标浓度必须小于原始浓度")
+
+    dilution_factor = round(
+        payload.original_concentration / payload.target_concentration, 2
+    )
+
+    return DilutionResponse(
+        original_concentration=payload.original_concentration,
+        target_concentration=payload.target_concentration,
+        dilution_factor=dilution_factor,
+    )
 
 
 def generate_record_no(db: Session) -> str:
