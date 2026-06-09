@@ -65,6 +65,7 @@ def seed_initial_data():
                     {"name": "数据录入", "code": "data:input", "type": "menu", "path": "/data/input", "icon": "Edit", "sort": 401},
                     {"name": "原始记录", "code": "data:record", "type": "menu", "path": "/data/record", "icon": "Tickets", "sort": 402},
                     {"name": "数据溯源", "code": "data:trace", "type": "menu", "path": "/data/trace", "icon": "Share", "sort": 403},
+                    {"name": "稀释倍数计算", "code": "data:dilution", "type": "menu", "path": "/data/dilution-calc", "icon": "Cpu", "sort": 404},
                     {"name": "资源管理", "code": "resource:manage", "type": "menu", "path": "/resource", "icon": "Grid", "sort": 500},
                     {"name": "试剂管理", "code": "resource:reagent", "type": "menu", "path": "/resource/reagent", "icon": "FirstAidKit", "sort": 501},
                     {"name": "设备管理", "code": "resource:equipment", "type": "menu", "path": "/resource/equipment", "icon": "Monitor", "sort": 502},
