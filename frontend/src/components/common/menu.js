@@ -28,7 +28,8 @@ export const menuRoutes = [
     children: [
       { path: 'input', meta: { title: '数据录入', icon: 'Edit' } },
       { path: 'record', meta: { title: '原始记录', icon: 'Tickets' } },
-      { path: 'trace', meta: { title: '数据溯源', icon: 'Share' } }
+      { path: 'trace', meta: { title: '数据溯源', icon: 'Share' } },
+      { path: 'dilution', meta: { title: '稀释计算器', icon: 'MagicStick' } }
     ]
   },
   {

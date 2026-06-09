@@ -116,6 +116,12 @@ const routes = [
             name: 'DataTrace',
             component: () => import('@/views/data/Trace.vue'),
             meta: { title: '数据溯源', icon: 'Share' }
+          },
+          {
+            path: 'dilution',
+            name: 'DilutionCalculator',
+            component: () => import('@/views/data/Dilution.vue'),
+            meta: { title: '稀释计算器', icon: 'MagicStick' }
           }
         ]
       },
